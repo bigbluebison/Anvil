@@ -22,16 +22,15 @@ class Well(db.Mode, SerializerMixin):
 
     # Foreign Keys
     
-    # production_curve_id
-    # assumptions_id
-    # project_id
+    production_curve_id = db.Column(db.Integer, db.ForeignKey('production_curve_table.id'))
+    assumptions_id = db.Column(db.Integer, db.ForeignKey('assumptions_table.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey('projects_table.id'))
     # user_id --- for the future
 
     # Relationships
-    # production_curve
-    # gas_concentration
-    # assumptions
-    # project
+    production_curve db.relationship('ProductionCurve', back_populates='well')
+    assumptions = db.relationship('Assumptions', back_populates='well')
+    project = db.relationship('Project', back_populates='wells')
     # user --- future idea
 
 

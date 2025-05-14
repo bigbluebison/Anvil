@@ -84,6 +84,7 @@ inlet_gas_fee = 0.25
 ngl_fee =  0.10
 
 # additional revenue sharing/POP (%)
+
 nat_gas_processor_share = 0.10
 ngl_processor_share = 0.10
 helium_processor_share = 0.10
@@ -96,7 +97,8 @@ other_contractors = 1.0
 electricity = 5.0
 misc = 1.0
 
-# Disposal well opex ($000/Well/Mo)
+# Maybe take out for right now
+#Disposal well opex ($000/Well/Mo)
 pumping_services = 0.5
 other_contractors = 3.0
 electricity = 5.0
@@ -467,19 +469,18 @@ df['cum_cash_flow'] = df['free_cash_flow'].cumsum()
 df['fcf_margin'] = np.round(df['free_cash_flow'] / df['total_net_revenues'], 2)
 
 # importing numpy financial for calculating metrics
-# Note: The following code requires the 'numpy_financial' package.
+# requires the 'numpy_financial' package.
 # Install it using 'pip install numpy-financial' or comment out if not needed.
 
-# import numpy_financial as npf
+import numpy_financial as npf
 
 # irr 
-# irr = npf.irr(df['free_cash_flow'])
+irr = npf.irr(df['free_cash_flow'])
 
 # npv10
-# discount_rate = 0.1
-# npv10 = npf.npv(discount_rate, df['free_cash_flow'])
+discount_rate = 0.1
+npv10 = npf.npv(discount_rate, df['free_cash_flow'])
 
 # roi
-# Note: 'cum_cash_flows' is not defined; likely meant 'cum_cash_flow'.
-# roi = np.round((np.max(df['cum_cash_flows']) / df['total_capex_spend'].sum()),2)
+roi = np.round((np.max(df['cum_cash_flows']) / df['total_capex_spend'].sum()),2)
 
