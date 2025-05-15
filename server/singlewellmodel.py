@@ -451,7 +451,7 @@ df.loc[0, 'completion_capex'] = prod['completion']*df['wi'].iloc[0]
 df.loc[0, 'facilities_capex'] = prod['facilities']*df['wi'].iloc[0]
 df.loc[0, 'pipeline_capex'] = prod['pipeline']*df['wi'].iloc[0]
 df.loc[0, 'plug_abandon_bond'] = prod['plug_abandon_bond']*df['wi'].iloc[0]
-
+0
 df['total_capex_spend'] = (
     df['land_acquisition_capex'] +
     df['completion_capex'] +
@@ -482,5 +482,5 @@ discount_rate = 0.1
 npv10 = npf.npv(discount_rate, df['free_cash_flow'])
 
 # roi
-roi = np.round((np.max(df['cum_cash_flows']) / df['total_capex_spend'].sum()),2)
+roi = np.round((np.max(df['cum_cash_flow']) / df['total_capex_spend'].sum()),2)
 

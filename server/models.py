@@ -7,12 +7,12 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-from config import db, brycpt
+from config import db
 
 
 # Models 
 
-class Well(db.Mode, SerializerMixin):
+class Well(db.Model, SerializerMixin):
     __tablename__ = 'wells_table'
 
     # Columns
@@ -26,7 +26,7 @@ class Well(db.Mode, SerializerMixin):
     # user_id --- for the future
 
     # Relationships
-    production_curve db.relationship('ProductionCurve', back_populates='well')
+    production_curve = db.relationship('ProductionCurve', back_populates='well')
     assumptions = db.relationship('Assumptions', back_populates='well')
     project = db.relationship('Project', back_populates='wells')
     # user --- future idea
@@ -36,7 +36,7 @@ class Assumptions(db.Model, SerializerMixin):
     __tablename__ = 'assumptions_table'
 
     # Columns (assumptions)
-    
+    id = db.Column(db.Integer, primary_key=True)
     # nri and wi
     nri_before_payout = db.Column(db.Float, nullable=False)
     nri_after_payout = db.Column(db.Float, nullable=False)

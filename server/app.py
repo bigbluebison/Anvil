@@ -22,7 +22,7 @@ class WellNorm(Resource):
     def get(self):
         wells_to_get = Well.query.all()
 
-        data = [well.to_dict() for well in wells to get]
+        data = [well.to_dict() for well in wells_to_get]
 
         return data, 200
 
@@ -43,10 +43,10 @@ class WellNorm(Resource):
         except:
             raise Exception('There was an error creating this well')
 
-    api.add_resource(WellNorm, '/wells_table')
+api.add_resource(WellNorm, '/wells_table')
 
 
-class WellId(Resource):
+class WellById(Resource):
 
     # get a sepecific well by id
     def get(self, id):
@@ -87,7 +87,7 @@ class WellId(Resource):
         else:
             return {'error': 'Well does not exist'}, 404
     
-    api.add_resource(WellById, '/wells_table/<int:id>')
+api.add_resource(WellById, '/wells_table/<int:id>')
 
 
 
@@ -103,7 +103,7 @@ class AssumptionById(Resource):
             return {'error': 'Assumptions do not exist'}, 404
 
     # patch specific assumptions for a well by id
-    def path(self, id):
+    def patch(self, id):
         data_to_patch_with = request.get_json()
 
         try:
@@ -127,7 +127,7 @@ class AssumptionById(Resource):
             return {'error': 'Assumption does not exist'}, 404
 
 
-    api.add_resource(AssumptionById, '/assumptions_table/<int:id>')
+api.add_resource(AssumptionById, '/assumptions_table/<int:id>')
 
 
 # all production curves
@@ -158,7 +158,7 @@ class ProductionCurveNorm(Resource):
         except:
             raise Exception('There was an error creating this production curve')
 
-    api.add_resource(ProductionCurveNorm, '/production_curve_table')
+api.add_resource(ProductionCurveNorm, '/production_curve_table')
 
 class ProductionCurveById(Resource):
     # get a specific production curve by id
@@ -200,7 +200,7 @@ class ProductionCurveById(Resource):
         else:
             return {'error': 'Production curve does not exist'}, 404
     
-    api.add_resource(ProductionCurveById, '/production_curve_table/<int:id>')
+api.add_resource(ProductionCurveById, '/production_curve_table/<int:id>')
 
 
 class ProjectNorm(Resource):
@@ -230,7 +230,7 @@ class ProjectNorm(Resource):
         except:
             raise Exception('There was an error creating this project')
 
-    api.add_resource(ProjectNorm, '/projects_table')
+api.add_resource(ProjectNorm, '/projects_table')
 
 
 class ProjectById(Resource):
@@ -273,10 +273,26 @@ class ProjectById(Resource):
         else:
             return {'error': 'Project does not exist'}, 404
     
-    api.add_resource(ProjectById, '/projects_table/<int:id>')
+api.add_resource(ProjectById, '/projects_table/<int:id>')
 
 
+# Pricing
+class PricingNorm(Resource):
+    def get(self):
+        pricing_to_get = Pricing.query.all()
+        return [price.to_dict() for price in pricing_to_get], 200
 
+    def post(self):
+        data = request.get_json()
+        try:
+            new_pricing = Pricing(name=data['name'])  # Adjust fields as needed
+            db.session.add(new_pricing)
+            db.session.commit()
+            return new_pricing.to_dict(), 201
+        except:
+            raise Exception('There was an error creating this pricing')
+
+api.add_resource(PricingNorm, '/pricing_table')
 
 
 
