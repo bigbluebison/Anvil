@@ -9,19 +9,17 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from config import db, brycpt
 
+
 # Models 
 
 class Well(db.Mode, SerializerMixin):
     __tablename__ = 'wells_table'
 
-
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-
     # Foreign Keys
-    
     production_curve_id = db.Column(db.Integer, db.ForeignKey('production_curve_table.id'))
     assumptions_id = db.Column(db.Integer, db.ForeignKey('assumptions_table.id'))
     project_id = db.Column(db.Integer, db.ForeignKey('projects_table.id'))
@@ -142,20 +140,5 @@ class Pricing(db.Model, SerializerMixin):
     i_pentane_price = db.Column(db.Float)
     n_pentane_price = db.Column(db.Float)
     hexane_plus_price = db.Column(db.Float)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
