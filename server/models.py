@@ -31,6 +31,8 @@ class Well(db.Model, SerializerMixin):
     project = db.relationship('Project', back_populates='wells')
     # user --- future idea
 
+    serialize_rules = ('-assumptions.well', '-project.wells', '-production_curve.well')
+
 
 class Assumptions(db.Model, SerializerMixin):
     __tablename__ = 'assumptions_table'
@@ -89,7 +91,7 @@ class Assumptions(db.Model, SerializerMixin):
 
 
     # serialize rules
-    serialize_rules = ('-wells_table',)
+    serialize_rules = ('-well',)
 
     # validations
     # for any future modification
@@ -106,7 +108,7 @@ class ProductionCurve(db.Model, SerializerMixin):
     well = db.relationship('Well', back_populates='production_curve')
 
     # serialize rules
-    serialize_rules = ('-wells_table',)
+    serialize_rules = ('-well',)
 
     # valiations
     # (need to think about this)
@@ -122,7 +124,7 @@ class Project(db.Model, SerializerMixin):
     wells = db.relationship('Well', back_populates='project')
 
     # serialize rules
-    serialize_rules = ('-wells_table',)
+    serialize_rules = ('-well',)
 
 
 class Pricing(db.Model, SerializerMixin):

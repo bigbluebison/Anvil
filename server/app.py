@@ -306,10 +306,10 @@ api.add_resource(PricingNorm, '/pricing_table')
 # def not_found(e):
 #     return render_template("index.html")
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    return render_template("index.html")
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+# def catch_all(path):
+#     return render_template("index.html")
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
