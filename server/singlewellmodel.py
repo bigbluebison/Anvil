@@ -1,9 +1,12 @@
 
+import numpy as np
+import pandas as pd
+
+# test test test
+
 # Sample Type Curve Generator
 # Create type curves for the model
 
-import numpy as np
-import pandas as pd
 
 # seed for consistency for this project
 np.random.seed(999)
