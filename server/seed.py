@@ -122,10 +122,10 @@ def seed_assumptions():
             }
         }),
         gas_concentrations = json.dumps({
-            'methane'     : 0.5241,
-            'ethane'      : 0.0543,
+            'methane'     : 0.5143,
+            'ethane'      : 0.0453,
             'propane'     : 0.0219,
-            'i-butane'    : 0.0148,
+            'i-butane'    : 0.0188,
             'n-butane'    : 0.0101,
             'i-pentane'   : 0.0028,
             'n-pentane'   : 0.0019,
@@ -146,6 +146,9 @@ def seed_assumptions():
         drilling_start_date = '2023-03-01',
         prod_start_date = '2023-09-01'
     )
+
+    db.session.add(assumptions1)
+    db.session.add(assumptions2)
 
 
 
