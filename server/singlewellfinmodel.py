@@ -57,8 +57,8 @@ def working_interest(id):
     net_working_interest_before = assumptions['nri_before_payout']
     net_working_interest_after = assumptions['nri_after_payout']
 
-
     return working_interest_before, working_interest_after, net_working_interest_before, net_working_interest_after
+
 
 def gas_concentrations(id):
     """
@@ -83,16 +83,71 @@ def gas_concentrations(id):
     # return gas_concentration
     return methane, ethane, propane, i_butane, n_butane, i_pentane, n_pentane, hexane_plus, helium
 
+def refinery_efficiencies(id):
+    """
+    Get the refinery efficiencies for a given well ID.
+    """
+
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    refinery_efficiencies = well_to_get['assumptions']['refinery_assumptions']
+    refinery_efficiencies = json.loads(refinery_efficiencies)
+
+    ethane_efficiency =  refinery_efficiencies["ethane_efficiency"]
+    propane_efficiency =  refinery_efficiencies["propane_efficiency"]
+    i_butane_efficiency  = refinery_efficiencies["ibutane_efficiency"]
+    n_butane_efficiency = refinery_efficiencies["nbutane_efficiency"]
+    i_pentane_efficiency = refinery_efficiencies["ipentane_efficiency"]
+    n_pentane_efficiency = refinery_efficiencies["npentane_efficiency"]
+    hexane_plus_efficiency = refinery_efficiencies["hexaneplus_efficiency"]
+    helium_efficiency = refinery_efficiencies["helium_efficiency"]
+  
+    return ethane_efficiency, propane_efficiency, i_butane_efficiency, n_butane_efficiency, i_pentane_efficiency, n_pentane_efficiency, hexane_plus_efficiency, helium_efficiency
+
+    # return refinery_efficiencies
+
 def calc_productions(id):
 
     type_curve_df = get_typecurve(id)
     methane, ethane, propane, i_butane, n_butane, i_pentane, n_pentane, hexane_plus, helium = gas_concentrations(id)
+    ethane_efficiency, propane_efficiency, i_butane_efficiency, n_butane_efficiency, i_pentane_efficiency, n_pentane_efficiency, hexane_plus_efficiency, helium_efficiency = refinery_efficiencies(id)
+    
+    # Gallons per Mcf factor 
+    ethane_factor = 26.745
+    propane_factor = 27.555
+    i_butane_factor = 32.714
+    n_butane_factor = 31.529
+    i_pentane_factor = 36.606
+    n_pentane_factor = 36.219
+    hexane_plus_factor = 43.295
 
-    # type_curve_df['total_oil_production (Mbbl)'] = type_curve_df['Total Oil Production (bbl)'].astype(float)
+    # Total oil production
+    type_curve_df['Total_Oil_Production (Mbbl)'] = type_curve_df['Oil_Production (Bbl)']/(1000.0)
 
-    pass
+    # Total nat gas production
+    type_curve_df['Methane (MMcf)'] = type_curve_df['Total_Gas_Production (Mcf)']*(methane)/(1000.0)
+
+    # Total ethane production
+    type_curve_df['Ethane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(ethane)*(ethane_factor)*(ethane_efficiency)/(1000.0)
+
+    # Total propane production
+    type_curve_df['Propane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(propane)*(propane_factor)*(propane_efficiency)/(1000.0)
+    # Total i-butane production
+    type_curve_df['i-Butane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(i_butane)*(i_butane_factor)*(i_butane_efficiency)/(1000.0)
+    # Total n-butane production
+    type_curve_df['n-Butane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(n_butane)*(n_butane_factor)*(n_butane_efficiency)/(1000.0)
+    # Total i-pentane production
+    type_curve_df['i-Pentane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(i_pentane)*(i_pentane_factor)*(i_pentane_efficiency)/(1000.0)
+    # Total n-pentane production
+    type_curve_df['n-Pentane (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(n_pentane)*(n_pentane_factor)*(n_pentane_efficiency)/(1000.0)
+    # Total hexane+ production
+    type_curve_df['Hexane+ (Mgal)'] = type_curve_df['Total_Gas_Production (Mcf)']*(hexane_plus)*(hexane_plus_factor)*(hexane_plus_efficiency)/(1000.0)
+    # Total helium production
+    type_curve_df['Helium (Mcf)'] = type_curve_df['Total_Gas_Production (Mcf)']*(helium)/(1000.0)
+
+
+    return type_curve_df
 
 
 with app.app_context():   
-        print(get_typecurve(1))
+        print(calc_productions(1))
 
