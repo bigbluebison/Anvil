@@ -49,16 +49,41 @@ def working_interest(id):
     Get the working interest for a given well ID.
     """
 
-    assumptions_to_get = Assumptions.query.filter_by(id=id).first()
-    assumptions_to_dict = assumptions_to_get.to_dict()
-    working_interest_before = assumptions_to_dict['wi_before_payout']
-    working_interest_after = assumptions_to_dict['wi_after_payout']
-    net_working_interest_before = assumptions_to_dict['nri_before_payout']
-    net_working_interest_after = assumptions_to_dict['nri_after_payout']
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    assumptions = well_to_get['assumptions']
+
+    working_interest_before = assumptions['wi_before_payout']
+    working_interest_after = assumptions['wi_after_payout']
+    net_working_interest_before = assumptions['nri_before_payout']
+    net_working_interest_after = assumptions['nri_after_payout']
 
 
     return working_interest_before, working_interest_after, net_working_interest_before, net_working_interest_after
 
+def gas_concentrations(id):
+    """
+    Get the gas concentrations for a given well ID.
+    """
+
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    gas_concentrations = well_to_get['assumptions']['gas_concentrations']
+    gas_concentrations = json.loads(gas_concentrations)
+
+
+    methane =  gas_concentrations["methane"]
+    ethane =  gas_concentrations["ethane"]
+    propane =  gas_concentrations["propane"]
+    i_butane  = gas_concentrations["i-butane"]
+    n_butane = gas_concentrations["n-butane"]
+    i_pentane = gas_concentrations["i-pentane"]
+    n_pentane = gas_concentrations["n-pentane"]
+    hexane_plus = gas_concentrations["hexane+"]
+    helium = gas_concentrations["helium"]
+
+    # return gas_concentration
+    return methane, ethane, propane, i_butane, n_butane, i_pentane, n_pentane, hexane_plus, helium
+
+s
 
 with app.app_context():   
         print(working_interest(1))
