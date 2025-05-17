@@ -83,8 +83,16 @@ def gas_concentrations(id):
     # return gas_concentration
     return methane, ethane, propane, i_butane, n_butane, i_pentane, n_pentane, hexane_plus, helium
 
-s
+def calc_productions(id):
+
+    type_curve_df = get_typecurve(id)
+    methane, ethane, propane, i_butane, n_butane, i_pentane, n_pentane, hexane_plus, helium = gas_concentrations(id)
+
+    # type_curve_df['total_oil_production (Mbbl)'] = type_curve_df['Total Oil Production (bbl)'].astype(float)
+
+    pass
+
 
 with app.app_context():   
-        print(working_interest(1))
+        print(get_typecurve(1))
 
