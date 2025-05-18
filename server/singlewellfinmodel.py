@@ -54,10 +54,10 @@ def working_interest(id):
 
     working_interest_before = assumptions['wi_before_payout']
     working_interest_after = assumptions['wi_after_payout']
-    net_working_interest_before = assumptions['nri_before_payout']
-    net_working_interest_after = assumptions['nri_after_payout']
+    net_revenue_interest_before = assumptions['nri_before_payout']
+    net_revenue_interest_after = assumptions['nri_after_payout']
 
-    return working_interest_before, working_interest_after, net_working_interest_before, net_working_interest_after
+    return working_interest_before, working_interest_after, net_revenue_interest_before, net_revenue_interest_after
 
 
 def gas_concentrations(id):
@@ -148,6 +148,170 @@ def calc_productions(id):
     return type_curve_df
 
 
+def calc_net_productions(id):
+    """
+    Calculate the net productions for a given well ID.
+    """
+
+    type_curve_df = calc_productions(id)
+    working_interest_before, working_interest_after, net_revenue_interest_before, net_revenue_interest_after = working_interest(id)
+
+    # Working interest
+    type_curve_df['Working_Interest'] = working_interest_before * (len(type_curve_df))
+    # Net Revenue Interest 
+    type_curve_df['Net_Revenue_Interest'] = net_revenue_interest_before * (len(type_curve_df))
+
+
+    # Net oil production
+    type_curve_df['Net_Oil_Production (Mbbl)'] = type_curve_df['Total_Oil_Production (Mbbl)']*type_curve_df['Working_Interest']*type_curve_df['Net_Revenue_Interest']
+
+    # Net nat gas production
+    type_curve_df['Net_Methane (MMcf)'] = type_curve_df['Methane (MMcf)']*(working_interest_before)*(net_revenue_interest_before)
+
+    # Net ethane production
+    type_curve_df['Net_Ethane (Mgal)'] = type_curve_df['Ethane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+
+    # Net propane production
+    type_curve_df['Net_Propane (Mgal)'] = type_curve_df['Propane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net i-butane production
+    type_curve_df['Net_i-Butane (Mgal)'] = type_curve_df['i-Butane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net n-butane production
+    type_curve_df['Net_n-Butane (Mgal)'] = type_curve_df['n-Butane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net i-pentane production
+    type_curve_df['Net_i-Pentane (Mgal)'] = type_curve_df['i-Pentane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net n-pentane production
+    type_curve_df['Net_n-Pentane (Mgal)'] = type_curve_df['n-Pentane (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net hexane+ production
+    type_curve_df['Net_Hexane+ (Mgal)'] = type_curve_df['Hexane+ (Mgal)']*(working_interest_before)*(net_revenue_interest_before)
+    
+    # Net helium production
+    type_curve_df['Net_Helium (Mcf)'] = type_curve_df['Helium (Mcf)']*(working_interest_before)*(net_revenue_interest_before)
+
+    return type_curve_df
+
+
+def get_pricing(id):
+    """
+    Get the pricing for a given well ID.
+    """
+    
+    prices = Pricing.query.filter_by(id=id).first().to_dict()
+
+    oil_price = prices['oil_price']
+    methane_price = prices['methane_price']
+    ethane_price = prices['ethane_price']
+    propane_price = prices['propane_price']
+    i_butane_price = prices['i_butane_price']
+    n_butane_price = prices['n_butane_price']
+    i_pentane_price = prices['i_pentane_price']
+    n_pentane_price = prices['n_pentane_price']
+    hexane_plus_price = prices['hexane_plus_price']
+    helium_price = prices['helium_price']
+
+    return oil_price, methane_price, ethane_price, propane_price, i_butane_price, n_butane_price, i_pentane_price, n_pentane_price, hexane_plus_price, helium_price
+
+
+def production_cost_assumptions(id):
+    '''
+    Get the well related production cost assumptions for a given well ID.
+    '''
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    assumptions = well_to_get['assumptions']
+
+    primary_pipeline_fee = assumptions['primary_pipeline_fee']
+    secondary_pipeline_fee = assumptions['secondary_pipeline_fee']  
+    inlet_gas_fee = assumptions['inlet_gas_fee']
+
+    methane_processor_share = assumptions['nat_gas_processor_share']
+    helium_processor_share = assumptions['helium_processor_share']
+    ngl_processor_share = assumptions['ngl_processor_share']   
+
+    return primary_pipeline_fee, secondary_pipeline_fee, inlet_gas_fee, methane_processor_share, helium_processor_share, ngl_processor_share
+
+
+def calc_net_revenues(id):
+    '''
+    calculate the net revenues for a given well ID
+    '''
+    type_curve_df = calc_net_productions(id)
+    oil_price, methane_price, ethane_price, propane_price, i_butane_price, n_butane_price, i_pentane_price, n_pentane_price, hexane_plus_price, helium_price = get_pricing(id)
+    primary_pipeline_fee, secondary_pipeline_fee, inlet_gas_fee, methane_processor_share, helium_processor_share, ngl_processor_share = production_cost_assumptions(id)
+
+    # Net oil revenues
+    type_curve_df['Net_Oil_Revenues'] = type_curve_df['Net_Oil_Production (Mbbl)']*(oil_price)
+    # Net nat gas revenues
+    type_curve_df['Net_Methane_Revenues'] = type_curve_df['Net_Methane (MMcf)']*(methane_price)
+    # Net ethane revenues
+    type_curve_df['Net_Ethane_Revenues'] = type_curve_df['Net_Ethane (Mgal)']*(ethane_price)
+    # Net propane revenues
+    type_curve_df['Net_Propane_Revenues'] = type_curve_df['Net_Propane (Mgal)']*(propane_price)
+    # Net i-butane revenues
+    type_curve_df['Net_i-Butane_Revenues'] = type_curve_df['Net_i-Butane (Mgal)']*(i_butane_price)
+    # Net n-butane revenues
+    type_curve_df['Net_n-Butane_Revenues'] = type_curve_df['Net_n-Butane (Mgal)']*(n_butane_price)
+    # Net i-pentane revenues
+    type_curve_df['Net_i-Pentane_Revenues'] = type_curve_df['Net_i-Pentane (Mgal)']*(i_pentane_price)
+    # Net n-pentane revenues
+    type_curve_df['Net_n-Pentane_Revenues'] = type_curve_df['Net_n-Pentane (Mgal)']*(n_pentane_price)
+    # Net hexane+ revenues
+    type_curve_df['Net_Hexane+_Revenues'] = type_curve_df['Net_Hexane+ (Mgal)']*(hexane_plus_price)
+    # Net helium revenues
+    type_curve_df['Net_Helium_Revenues'] = type_curve_df['Net_Helium (Mcf)']*(helium_price)
+    
+    # Production cost assumptions
+    # Certain cost items in energy wells are usually deducted before net revenues are calculated
+
+    type_curve_df['Gathering_And_Transportation_Fees'] =  (type_curve_df['Total_Gas_Production (Mcf)'] * type_curve_df['Working_Interest'] * (primary_pipeline_fee + secondary_pipeline_fee)) /1000
+    type_curve_df['Gas_Processing_Fees'] =  (type_curve_df['Total_Gas_Production (Mcf)']  * type_curve_df['Working_Interest']  * (inlet_gas_fee)) /1000
+    
+    type_curve_df['Methane_Sharing_Cost'] =  (type_curve_df['Net_Methane_Revenues'] * type_curve_df['Working_Interest']  * (methane_processor_share)) 
+    
+    type_curve_df['Ngl_Sharing_Cost'] =  (
+        (
+        type_curve_df['Net_Ethane_Revenues']
+        + type_curve_df['Net_Propane_Revenues']
+        + type_curve_df['Net_i-Butane_Revenues']
+        + type_curve_df['Net_i-Butane_Revenues']
+        + type_curve_df['Net_n-Butane_Revenues']
+        + type_curve_df['Net_i-Pentane_Revenues']
+        + type_curve_df['Net_n-Pentane_Revenues']
+        + type_curve_df['Net_Hexane+_Revenues']
+    )  * type_curve_df['Working_Interest'] *  (ngl_processor_share))
+    
+    type_curve_df['Helium_Sharing_Cost'] =  (type_curve_df['Net_Helium_Revenues'] * type_curve_df['Working_Interest'] * (helium_processor_share))
+
+
+    # Total revenues
+    # Total revenues to the interest owner
+    type_curve_df['Total_Net_Revenues'] = (
+        type_curve_df['Net_Oil_Revenues'] 
+        + type_curve_df['Net_Methane_Revenues'] 
+        + type_curve_df['Net_Ethane_Revenues'] 
+        + type_curve_df['Net_Propane_Revenues'] 
+        + type_curve_df['Net_i-Butane_Revenues'] 
+        + type_curve_df['Net_n-Butane_Revenues'] 
+        + type_curve_df['Net_i-Pentane_Revenues'] 
+        + type_curve_df['Net_n-Pentane_Revenues'] 
+        + type_curve_df['Net_Hexane+_Revenues'] 
+        + type_curve_df['Net_Helium_Revenues']
+        - type_curve_df['Gathering_And_Transportation_Fees']
+        - type_curve_df['Gas_Processing_Fees']
+        - type_curve_df['Methane_Sharing_Cost']
+        - type_curve_df['Ngl_Sharing_Cost']
+        - type_curve_df['Helium_Sharing_Cost']
+        )
+    
+    return type_curve_df
+
+
+
 with app.app_context():   
-        print(calc_productions(1))
+        # print(calc_net_productions(1))
+        # print(get_pricing(1))
+        print(calc_net_revenues(1))
 
