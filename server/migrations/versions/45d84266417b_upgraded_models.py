@@ -1,8 +1,8 @@
-"""initial
+"""upgraded models
 
-Revision ID: dc19f735d526
+Revision ID: 45d84266417b
 Revises: 
-Create Date: 2025-05-15 20:30:46.807443
+Create Date: 2025-05-18 17:34:34.687111
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dc19f735d526'
+revision = '45d84266417b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,6 +48,7 @@ def upgrade():
     sa.Column('nat_gas_processor_share', sa.Float(), nullable=True),
     sa.Column('ngl_processor_share', sa.Float(), nullable=True),
     sa.Column('helium_processor_share', sa.Float(), nullable=True),
+    sa.Column('opex_assumptions', sa.String(), nullable=False),
     sa.Column('severance_tax', sa.Float(), nullable=True),
     sa.Column('ad_valorem_tax', sa.Float(), nullable=True),
     sa.Column('capex_assumptions', sa.String(), nullable=False),

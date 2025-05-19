@@ -58,6 +58,16 @@ def seed_assumptions():
                 "plug_abandon_bond": 20
             }
         }),
+        opex_assumptions = json.dumps({
+            "production_well": {
+                "pumper": 7,              # $000
+                "electricity": 5,         
+                "water_disposal": 3,      
+                "maintenance_repairs": 4, 
+                "chemical_treatments": 2, 
+                "other": 1           
+            }
+        }),
         gas_concentrations = json.dumps({
             'methane'     : 0.5366,
             'ethane'      : 0.0493,
@@ -119,6 +129,16 @@ def seed_assumptions():
                 "contingency": 86,
                 "pipeline": 30,
                 "plug_abandon_bond": 20
+            }
+        }),
+        opex_assumptions = json.dumps({
+            "production_well": {
+                "pumper": 7,              # $000
+                "electricity": 5,         
+                "water_disposal": 3,      
+                "maintenance_repairs": 4, 
+                "chemical_treatments": 2, 
+                "other": 1           
             }
         }),
         gas_concentrations = json.dumps({

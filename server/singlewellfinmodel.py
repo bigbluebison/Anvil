@@ -234,6 +234,42 @@ def production_cost_assumptions(id):
     return primary_pipeline_fee, secondary_pipeline_fee, inlet_gas_fee, methane_processor_share, helium_processor_share, ngl_processor_share
 
 
+def get_operating_expenses(id):
+    """
+    Get the operating expenses for a given well ID.
+    """
+
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    assumptions = well_to_get['assumptions']
+
+    operating_expenses = assumptions['opex_assumptions']['production_well']
+
+    pumper_expenses = operating_expenses['pumper']
+    electricity_expenses = operating_expenses['electricity']
+    water_disposal_expenses = operating_expenses['water_disposal']
+    maintenance_repairs = operating_expenses['maintenance_repairs']
+    chemical_treatments = operating_expenses['chemical_treatments']
+    other_expenses = operating_expenses['other']    
+
+    return pumper_expenses, electricity_expenses, water_disposal_expenses, maintenance_repairs, chemical_treatments, other_expenses
+
+
+def production_taxes(id):
+    '''
+    Get the production taxes for a given well ID.
+    '''
+
+    well_to_get = (Well.query.filter_by(id=id).first()).to_dict()
+    assumptions = well_to_get['assumptions']
+
+    production_taxes = assumptions['production_taxes']
+    oil_tax = production_taxes['oil_tax']
+    gas_tax = production_taxes['gas_tax']
+    helium_tax = production_taxes['helium_tax']
+
+    return oil_tax, gas_tax, helium_tax
+
+
 def calc_net_revenues(id):
     '''
     calculate the net revenues for a given well ID
@@ -309,8 +345,10 @@ def calc_net_revenues(id):
 
 
 
+
+
 with app.app_context():   
         # print(calc_net_productions(1))
         # print(get_pricing(1))
-        print(calc_net_revenues(1))
+        get_operating_expenses(1)
 

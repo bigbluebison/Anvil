@@ -65,6 +65,9 @@ class Assumptions(db.Model, SerializerMixin):
     ngl_processor_share = db.Column(db.Float)
     helium_processor_share = db.Column(db.Float)
 
+    # opex assumptions
+    opex_assumptions = db.Column(db.String, nullable=False)
+
     # production taxes
     severance_tax = db.Column(db.Float)
     ad_valorem_tax = db.Column(db.Float)
